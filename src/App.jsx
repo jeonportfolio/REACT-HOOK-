@@ -1,10 +1,46 @@
-import { useReducer, useRef } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { useState } from "react";
 import { MyComponent, MyProvider } from "./MyComponent";
 import { ThemeComponent, ThemeProvider } from "./Theme";
 
 
 const intial = {count: 0};
+
+function Update(props) {
+  const [state, setState] = useState(0);
+  useEffect(() => {
+    console.log("update", state)
+  }, [state]);
+  return (
+    <div>
+      <h1>state: {state}</h1>
+      <button onClick={() => setState((pre) => pre + 1)}>Click</button>
+    </div>
+  )
+}
+
+function CleanUp() {
+  const [seconds, setSeconds] = useState(0);
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      setSeconds((pre) => pre + 1);
+    },1000);
+    return () => {
+      console.log('clean')
+      clearInterval(timerId)
+    };
+  }, []);
+  return <div>Seconds: {seconds}</div>
+}
+
+
+function Basic() {
+  useEffect(() => {
+    console.log("mount");
+  },[])
+  return <div>Hello</div>
+}
+
 
 const reducer = (state, action) => {
   switch(action.type){
@@ -21,6 +57,7 @@ const reducer = (state, action) => {
   }
 }
 
+
 function FocusInput() {
   const inputRef = useRef(null);
   
@@ -36,7 +73,7 @@ function FocusInput() {
 }
 
 function App() {
-
+  const [isShow, setIsShow] = useState(false);
   const[seconds, setSeconds] = useState(0);
   const timeRef = useRef(null);
 
@@ -55,6 +92,10 @@ function App() {
 
   return (
     <div>
+        {isShow && <CleanUp/>}
+        <button onClick={() => setIsShow((pre) => !pre)}>clean</button>
+        <Update/>
+        <Basic/>
         <h1>Timer: {seconds}</h1>
         <button onClick={handleStart}>Start</button>
         <button onClick={handleEnd}>End</button>
